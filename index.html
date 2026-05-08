@@ -114,8 +114,42 @@ textarea{resize:vertical;min-height:60px}
 hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 .mt-12{margin-top:12px}
 .text-muted{color:var(--muted);font-size:12px}
-@media(max-width:800px){.stats-row{grid-template-columns:repeat(2,1fr)}.student-cards{grid-template-columns:1fr 1fr}.topbar-nav{display:none}}
-@media(max-width:500px){.student-cards{grid-template-columns:1fr}.stats-row{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}}
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:150;padding:4px 0 env(safe-area-inset-bottom,8px);box-shadow:0 -2px 8px rgba(0,0,0,.08)}
+.mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;color:var(--muted);font-size:9px;font-weight:600;font-family:'Inter',sans-serif;padding:5px 2px;transition:color .2s;line-height:1.2}
+.mob-nav-btn i{font-size:19px}
+.mob-nav-btn.active{color:var(--teal)}
+.dash-cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.att-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.rep-grid-a{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+.rep-grid-b{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:800px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .student-cards{grid-template-columns:1fr 1fr}
+  .topbar-nav{display:none}
+  .mob-nav{display:flex}
+  .topbar{padding:0 10px;height:52px}
+  .logo-sub{display:none}
+  .logo-name{font-size:11px}
+  .logo-img{width:32px;height:32px}
+  #lang-toggle{display:none}
+  .content{padding:14px 12px 80px}
+  .modal-bg{padding:0;align-items:flex-end}
+  .modal{border-radius:var(--radius-lg) var(--radius-lg) 0 0;max-height:92vh;max-width:100%}
+  .dash-cards-grid,.att-grid,.rep-grid-a,.rep-grid-b{grid-template-columns:1fr}
+  .att-grid{gap:10px}
+  .fee-row{flex-wrap:wrap;gap:6px}
+  .att-row{flex-wrap:wrap;gap:6px;padding:9px 10px}
+  .search-row input{min-width:100%}
+  .page-title{font-size:17px}
+}
+@media(max-width:500px){
+  .student-cards{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .form-grid{grid-template-columns:1fr}
+  .topbar-right{gap:4px}
+  #dark-btn span{display:none}
+  .ctrl-btn{padding:6px 8px;font-size:11px}
+}
 </style>
 </head>
 <body id="app">
@@ -146,6 +180,16 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   </div>
 </div>
 
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mob-nav">
+  <button class="mob-nav-btn active" id="mn-dashboard" onclick="showSection('dashboard')"><i class="ti ti-layout-dashboard"></i><span id="mn-dash-lbl">Home</span></button>
+  <button class="mob-nav-btn" id="mn-students" onclick="showSection('students')"><i class="ti ti-users"></i><span id="mn-stu-lbl">Students</span></button>
+  <button class="mob-nav-btn" id="mn-attendance" onclick="showSection('attendance')"><i class="ti ti-calendar-check"></i><span id="mn-att-lbl">Attend</span></button>
+  <button class="mob-nav-btn" id="mn-fees" onclick="showSection('fees')"><i class="ti ti-coin"></i><span id="mn-fee-lbl">Fees</span></button>
+  <button class="mob-nav-btn" id="mn-reports" onclick="showSection('reports')"><i class="ti ti-chart-bar"></i><span id="mn-rep-lbl">Reports</span></button>
+</nav>
+
+
 <div class="content">
 
 <!-- DASHBOARD -->
@@ -162,7 +206,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div class="stat-card"><div class="stat-n c-teal" id="d-collected">Rs.0</div><div class="stat-l" id="dl-collected">Collected</div></div>
     <div class="stat-card"><div class="stat-n c-red" id="d-outstanding">Rs.0</div><div class="stat-l" id="dl-outstanding">Outstanding</div></div>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+  <div class="dash-cards-grid">
     <div class="card"><div class="card-hdr"><div class="card-title"><i class="ti ti-alert-circle"></i><span id="ct-pending">Pending Fees</span></div></div><div id="pending-fees-list"></div></div>
     <div class="card"><div class="card-hdr"><div class="card-title"><i class="ti ti-activity"></i><span id="ct-recent">Recent Activity</span></div></div><div id="recent-list"></div></div>
   </div>
@@ -196,7 +240,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     <button class="btn btn-teal btn-sm" onclick="saveAttendance()"><i class="ti ti-device-floppy"></i><span id="btn-save-att">Save</span></button>
     <button class="btn btn-outline btn-sm" onclick="markAllPresent()"><i class="ti ti-checks"></i><span id="btn-all-p">All Present</span></button>
   </div>
-  <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
+  <div class="att-grid">
     <div class="card"><div class="card-hdr"><div class="card-title"><i class="ti ti-list-check"></i><span id="ct-mark-att">Mark Attendance</span></div></div><div id="attendance-rows"></div></div>
     <div class="card"><div class="card-hdr"><div class="card-title"><i class="ti ti-chart-pie"></i><span id="ct-att-sum">Summary</span></div></div><div id="att-summary"></div></div>
   </div>
@@ -221,11 +265,11 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 <!-- REPORTS -->
 <div class="section" id="section-reports">
   <div class="page-title" id="pg-reports">Reports</div>
-  <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px">
+  <div class="rep-grid-a">
     <div class="card"><div class="card-hdr"><div class="card-title"><i class="ti ti-chart-bar"></i><span id="ct-monthly">Monthly Collection</span></div></div><div class="mini-chart" id="monthly-chart"></div><div style="display:flex;justify-content:space-between;margin-top:4px" id="chart-labels"></div></div>
     <div class="card"><div class="card-hdr"><div class="card-title"><i class="ti ti-map-pin"></i><span id="ct-by-loc">By Location</span></div></div><div id="loc-report"></div></div>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+  <div class="rep-grid-b">
     <div class="card"><div class="card-hdr"><div class="card-title"><i class="ti ti-award"></i><span id="ct-by-level">By Level</span></div></div><div id="level-report"></div></div>
     <div class="card"><div class="card-hdr"><div class="card-title"><i class="ti ti-user-check"></i><span id="ct-att-rate">Attendance Rate</span></div></div><div id="att-rate-report"></div></div>
   </div>
@@ -449,13 +493,18 @@ function showSection(name) {
   for (var i=0;i<sections.length;i++) sections[i].classList.remove("active");
   var navBtns = document.querySelectorAll(".tnav-btn");
   for (var i=0;i<navBtns.length;i++) navBtns[i].classList.remove("active");
+  var mobBtns = document.querySelectorAll(".mob-nav-btn");
+  for (var i=0;i<mobBtns.length;i++) mobBtns[i].classList.remove("active");
   document.getElementById("section-"+name).classList.add("active");
   document.getElementById("nav-"+name).classList.add("active");
+  var mn = document.getElementById("mn-"+name);
+  if (mn) mn.classList.add("active");
   if (name === "dashboard") renderDashboard();
   else if (name === "students") renderStudents();
   else if (name === "attendance") renderAttendance();
   else if (name === "fees") renderFees();
   else if (name === "reports") renderReports();
+  window.scrollTo(0,0);
 }
 
 function toggleLang() {
@@ -665,7 +714,16 @@ function saveStudent() {
 function deleteStudent(id) {
   if (!confirm(t("deleteConfirm"))) return;
   students = students.filter(function(s){ return s.id !== id; });
-  renderStudents(); showToast(t("toastStudentDeleted"));
+  // Also remove all fee records and attendance for this student
+  fees = fees.filter(function(f){ return f.studentId !== id; });
+  for (var k in attendance) {
+    if (k.indexOf("_"+id) !== -1 && k.split("_")[1] == id) {
+      delete attendance[k];
+    }
+  }
+  renderStudents();
+  renderDashboard();
+  showToast(t("toastStudentDeleted"));
   document.getElementById("h-total").textContent = students.length;
   saveToStorage();
 }
@@ -857,7 +915,7 @@ function saveFeePayment() {
 function removeFee(fId) {
   if (!confirm(t("removeFeeConfirm"))) return;
   fees = fees.filter(function(f){ return f.id !== fId; });
-  renderFees(); showToast(t("toastFeeRemoved")); saveToStorage();
+  renderFees(); renderDashboard(); showToast(t("toastFeeRemoved")); saveToStorage();
 }
 
 // ============================================================
