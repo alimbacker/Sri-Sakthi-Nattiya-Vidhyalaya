@@ -169,6 +169,13 @@ textarea{resize:vertical;min-height:60px}
 .toast.show{opacity:1}
 .view-btn{padding:7px 12px;border-radius:8px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:5px}
 .view-btn.active{background:var(--teal);color:white;border-color:var(--teal)}
+/* ─── ATTENDANCE CONTROLS ─── */
+.att-controls{margin-bottom:14px}
+.att-controls-row1{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.att-controls-row2{display:flex;gap:8px}
+.att-controls-row1 input[type="date"]{flex:1;min-width:130px}
+.att-controls-row1 select{flex:1;min-width:110px}
+
 hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 .mt-12{margin-top:12px}
 .text-muted{color:var(--muted);font-size:12px}
@@ -229,24 +236,38 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   .logo-name{font-size:11px}
   .logo-img{width:32px;height:32px}
   .content{padding:14px 12px 80px}
+  /* Modal slides up as sheet */
   .modal-bg{padding:0;align-items:flex-end}
-  .modal{border-radius:var(--radius-lg) var(--radius-lg) 0 0;max-height:92vh;max-width:100%}
+  .modal{
+    border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+    max-height:92vh;
+    max-width:100%;
+    /* flex-direction set inline; allow internal scroll */
+    overflow-y:auto;
+  }
+  /* Scrollable body inside student modal */
+  #student-modal .modal{
+    display:flex;
+    flex-direction:column;
+    overflow:hidden; /* modal clips; inner div scrolls */
+  }
   .dash-cards-grid,.att-grid,.rep-grid-a,.rep-grid-b{grid-template-columns:1fr}
   .att-grid{gap:10px}
   .fee-row{flex-wrap:wrap;gap:6px}
   .att-row{flex-wrap:wrap;gap:6px;padding:9px 10px}
   .search-row input{min-width:100%}
   .page-title{font-size:17px}
-  /* Show lang toggle as compact icon-only button on mobile */
+  /* Lang toggle stays visible as compact button */
   #lang-toggle{padding:6px 8px;font-size:12px}
-  /* Hide export/import/clear buttons on mobile to save space */
+  /* Hide export/import/clear on mobile */
   .topbar-right > button[title="Export backup"],
   .topbar-right > button[title="Import backup"],
   .topbar-right > button[title="Clear all data"]{display:none}
-  /* Hide student count label on mobile */
   .topbar-right > span{display:none}
-  /* User email compact */
   #user-email{max-width:70px;font-size:10px}
+  /* Attendance controls - stack rows neatly */
+  .att-controls-row2{gap:6px}
+  .att-controls-row2 .btn{font-size:11px;padding:6px 6px}
 }
 @media(max-width:500px){
   .student-cards{grid-template-columns:1fr}
@@ -259,6 +280,10 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   .card{padding:14px 12px}
   .att-row{padding:8px 9px}
   .btn-sm{padding:5px 9px;font-size:11px}
+  /* Student modal footer always pinned */
+  #student-modal .modal > div:last-child{
+    padding-bottom:calc(14px + env(safe-area-inset-bottom, 0px));
+  }
 }
 </style>
 </head>
@@ -401,13 +426,17 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 <!-- ATTENDANCE -->
 <div class="section" id="section-attendance">
   <div class="page-title" id="pg-attend">Attendance</div>
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-    <label style="font-size:12px;font-weight:600;color:var(--muted)" id="lbl-date">Date:</label>
-    <input type="date" id="att-date" style="width:auto">
-    <select id="att-loc" style="width:auto"><option value="" id="al-all">All Locations</option><option value="Nagapattinam">Nagapattinam</option><option value="Nagore">Nagore</option></select>
-    <button class="btn btn-outline btn-sm" onclick="renderAttendance()"><i class="ti ti-refresh"></i><span id="btn-load">Load</span></button>
-    <button class="btn btn-teal btn-sm" onclick="saveAttendance()"><i class="ti ti-device-floppy"></i><span id="btn-save-att">Save</span></button>
-    <button class="btn btn-outline btn-sm" onclick="markAllPresent()"><i class="ti ti-checks"></i><span id="btn-all-p">All Present</span></button>
+  <div class="att-controls">
+    <div class="att-controls-row1">
+      <label style="font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap" id="lbl-date">Date:</label>
+      <input type="date" id="att-date" style="flex:1;min-width:130px">
+      <select id="att-loc" style="flex:1;min-width:110px"><option value="" id="al-all">All Locations</option><option value="Nagapattinam">Nagapattinam</option><option value="Nagore">Nagore</option></select>
+    </div>
+    <div class="att-controls-row2">
+      <button class="btn btn-outline btn-sm" onclick="renderAttendance()" style="flex:1"><i class="ti ti-refresh"></i><span id="btn-load">Load</span></button>
+      <button class="btn btn-teal btn-sm" onclick="saveAttendance()" style="flex:1"><i class="ti ti-device-floppy"></i><span id="btn-save-att">Save</span></button>
+      <button class="btn btn-outline btn-sm" onclick="markAllPresent()" style="flex:1"><i class="ti ti-checks"></i><span id="btn-all-p">All Present</span></button>
+    </div>
   </div>
   <div class="att-grid">
     <div class="card"><div class="card-hdr"><div class="card-title"><i class="ti ti-list-check"></i><span id="ct-mark-att">Mark Attendance</span></div></div><div id="attendance-rows"></div></div>
@@ -445,24 +474,24 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 </div>
 </div>
 
-<!-- MODAL: Student -->
 <div class="modal-bg" id="student-modal">
-  <div class="modal">
+  <div class="modal" style="display:flex;flex-direction:column">
     <div class="modal-title"><span id="modal-mode-title">Add Student</span><button class="btn-ghost" onclick="closeModal('student-modal')"><i class="ti ti-x"></i></button></div>
-    <div class="form-grid">
-      <div class="form-group"><label id="lf-name">Full Name *</label><input type="text" id="f-name" placeholder="Student name"></div>
-      <div class="form-group"><label id="lf-dob">Date of Birth</label><input type="date" id="f-dob"></div>
-      <div class="form-group"><label id="lf-guardian">Guardian</label><input type="text" id="f-guardian"></div>
-      <div class="form-group"><label id="lf-phone">Phone *</label><input type="tel" id="f-phone"></div>
-      <div class="form-group"><label id="lf-loc">Location</label><select id="f-loc"><option value="Nagapattinam">Nagapattinam</option><option value="Nagore">Nagore</option></select></div>
-      <div class="form-group"><label id="lf-level">Level</label><select id="f-level"><option>Beginner</option><option>Elementary</option><option>Intermediate</option><option>Advanced</option><option>Senior</option></select></div>
-      <div class="form-group"><label id="lf-fee">Monthly Fee (Rs.)</label><input type="number" id="f-fee" value="500"></div>
-      <div class="form-group"><label id="lf-join">Join Date</label><input type="date" id="f-join"></div>
+    <div style="flex:1;overflow-y:auto;padding-bottom:4px">
+      <div class="form-grid">
+        <div class="form-group"><label id="lf-name">Full Name *</label><input type="text" id="f-name" placeholder="Student name"></div>
+        <div class="form-group"><label id="lf-dob">Date of Birth</label><input type="date" id="f-dob"></div>
+        <div class="form-group"><label id="lf-guardian">Guardian</label><input type="text" id="f-guardian"></div>
+        <div class="form-group"><label id="lf-phone">Phone *</label><input type="tel" id="f-phone"></div>
+        <div class="form-group"><label id="lf-loc">Location</label><select id="f-loc"><option value="Nagapattinam">Nagapattinam</option><option value="Nagore">Nagore</option></select></div>
+        <div class="form-group"><label id="lf-level">Level</label><select id="f-level"><option>Beginner</option><option>Elementary</option><option>Intermediate</option><option>Advanced</option><option>Senior</option></select></div>
+        <div class="form-group"><label id="lf-fee">Monthly Fee (Rs.)</label><input type="number" id="f-fee" value="500"></div>
+        <div class="form-group"><label id="lf-join">Join Date</label><input type="date" id="f-join"></div>
+      </div>
+      <div class="form-group mt-12"><label id="lf-address">Address</label><textarea id="f-address"></textarea></div>
+      <div class="form-group mt-12"><label id="lf-notes">Notes</label><textarea id="f-notes"></textarea></div>
     </div>
-    <div class="form-group mt-12"><label id="lf-address">Address</label><textarea id="f-address"></textarea></div>
-    <div class="form-group mt-12"><label id="lf-notes">Notes</label><textarea id="f-notes"></textarea></div>
-    <hr>
-    <div style="display:flex;gap:8px;justify-content:flex-end">
+    <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:10px;display:flex;gap:8px;justify-content:flex-end;background:var(--surface)">
       <button class="btn btn-outline" id="btn-cancel" onclick="closeModal('student-modal')">Cancel</button>
       <button class="btn btn-teal" onclick="saveStudent()"><i class="ti ti-check"></i><span id="btn-save-student">Save</span></button>
     </div>
